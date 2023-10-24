@@ -30,11 +30,12 @@ mongoose
   .connect(process.env.MONGO_URL, {
     dbName: "e-bike",
   })
-  .then(() => console.log("Database is connected"))
+  .then(() => {
+    app.listen(port, () => console.log("server running on port", port));
+    console.log("Database is connected");
+  })
   .catch((err) => console.log("Failed to connect to database", err));
 
 app.use("/user", userRoutes);
 app.use("/rental", rentalRoutes);
 app.use("/station", stationRoutes);
-
-app.listen(port, () => console.log("server running on port", port));
