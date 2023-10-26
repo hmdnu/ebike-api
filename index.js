@@ -17,13 +17,20 @@ const port = process.env.PORT || 5000;
 // middlewares
 app.use(express.json());
 
-app.use(
-  cors({
-    origin: "*",
-    methods: ["GET", "POST", "PATCH", "DELETE"],
-    credentials: true,
-  })
-);
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "http://localhost:5173");
+  res.header("Access-Control-Allow-Credentials", "true");
+  // Add other required headers here
+
+  if (req.method === "OPTIONS") {
+    // Handle preflight requests (OPTIONS)
+    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    return res.status(204).end();
+  }
+
+  next();
+});
 
 // database connection
 mongoose
