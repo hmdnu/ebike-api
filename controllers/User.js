@@ -35,16 +35,9 @@ export async function login(req, res) {
     }
 
     if (password === user.password) {
-      const maxAge = 86_400_000;
-
       const token = createToken(user._id);
 
-      res.cookie("auth", token, {
-        maxAge,
-        withCredentials: true,
-      });
-
-      return res.status(200).json({ user, message: "login success", success: true });
+      return res.status(200).json({ user, token, message: "login success", success: true });
     } else {
       return res.status(401).json({ message: "password incorrect", success: false });
     }
