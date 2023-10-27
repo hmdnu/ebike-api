@@ -21,6 +21,7 @@ app.use(
   cors({
     origin: process.env.CLIENT_URL,
     methods: ["GET", "POST", "PATCH", "DELETE"],
+    allowedHeaders: ["Content-type", "application/json"],
     credentials: true,
   })
 );
