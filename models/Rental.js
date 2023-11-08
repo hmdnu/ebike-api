@@ -1,6 +1,11 @@
 import { Schema, model } from "mongoose";
 
 const RentalSchema = new Schema({
+  renter: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+  },
+
   bikeCode: {
     type: Number,
     required: true,
@@ -16,13 +21,14 @@ const RentalSchema = new Schema({
     default: false,
   },
 
-  rentDuration: {
-    type: Number,
-    default: 0,
+  pickUpTime: {
+    type: String,
+    required: true,
   },
 
   dateRent: {
     type: String,
+    required: true,
   },
 });
 
