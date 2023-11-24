@@ -5,14 +5,7 @@ const StationSchema = new Schema({
   bike: [
     {
       bikeCode: Number,
-      historyRenter: [
-        {
-          renter: {
-            type: Schema.Types.ObjectId,
-            ref: "User",
-          },
-        },
-      ],
+      isRented: { type: Boolean, default: false },
     },
   ],
 });

@@ -30,8 +30,10 @@ const UserSchema = new Schema({
     {
       bikeCode: Number,
       station: Number,
-      pickUpTime: Date,
-      dateRent: Date,
+      pickUpTime: String,
+      dateRent: String,
+      isRented: Boolean,
+      returnedTime: String,
     },
   ],
 });

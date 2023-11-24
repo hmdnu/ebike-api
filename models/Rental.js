@@ -16,14 +16,14 @@ const RentalSchema = new Schema({
     required: true,
   },
 
-  status: {
-    type: Boolean,
-    default: false,
-  },
-
   pickUpTime: {
     type: String,
     required: true,
+  },
+
+  isRented: {
+    type: Boolean,
+    default: true,
   },
 
   dateRent: {

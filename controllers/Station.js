@@ -11,11 +11,12 @@ async function promiseResolver(promise) {
 }
 
 export async function getStation(req, res) {
-  const station = await Station.find().populate({ path: "bike.historyRenter.renter" });
+  const station = await Station.find();
 
   const [data, error] = await promiseResolver(station);
 
-  if (data) return res.status(200).json({ station, message: "fetch station success", success: true });
+  if (data)
+    return res.status(200).json({ station, message: "fetch station success", success: true });
   if (error) return res.status(500).json({ message: "fetch station failed", success: false });
 }
 
@@ -30,19 +31,25 @@ export async function createStation(req, res) {
 }
 
 export async function updateStation(req, res) {
-  const { stationId, bikeCode } = req.params;
-  const { renter } = req.body;
+  const { station, bikecode } = req.params;
+  const { isRented } = req.body;
 
-  async function findBike() {
-    const stations = await Station.findById(stationId);
-    stations.bike.find((bike) => bike.bikeCode === parseInt(bikeCode)).historyRenter.push({ renter });
-    await stations.save();
-    return stations;
+  const bikes = await Station.findOne({ station });
+
+  const [data, error] = await promiseResolver(bikes);
+
+  if (data) {
+    const statusBike = data.bike.find((bike) => bike.bikeCode === parseInt(bikecode));
+
+    if (statusBike) {
+      statusBike.isRented = isRented;
+      await bikes.save();
+
+      return res
+        .status(200)
+        .json({ statusBike, message: "update isRented bike success", success: true });
+    }
   }
-
-  const [data, error] = await promiseResolver(findBike);
-
-  if (data) return res.status(200).json({ message: "update station success", success: true });
   if (error) return res.status(500).json({ message: "update station failed", success: false });
 }
 

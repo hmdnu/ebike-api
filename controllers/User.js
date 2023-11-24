@@ -1,4 +1,5 @@
 import User from "../models/User.js";
+import Station from "../models/Station.js";
 import { createToken } from "../utils/token.js";
 
 async function promiseResolver(promise) {
@@ -62,19 +63,58 @@ export async function getIndividualUser(req, res) {
   if (error) return res.status(501).json({ message: "cant fetch user", success: false });
 }
 
+// push rental data to user
 export async function editUser(req, res) {
   const { id } = req.params;
-  const { bikeCode, station, pickUpTime, dateRent } = req.body;
+  const { bikeCode, station, pickUpTime, dateRent, isRented } = req.body;
 
-  console.log("id", id);
-  console.log(req.body);
+  const user = await User.findById(id);
+  
+  const [data, error] = await promiseResolver(user);
 
-  // const user = await User.findByIdAndUpdate(id, {
-  //   bikeCode,
-  //   station,
-  //   pickUpTime,
-  //   dateRent,
-  // });
+  // const userBike = bike;
 
-  // const [data, error] = await promiseResolver(user);
+  if (data) {
+    console.log(data);
+    user.historyRental.push({ bikeCode, station, pickUpTime, dateRent, isRented });
+    await user.save();
+
+    res.status(200).json({ user, message: "edit user history rental success", success: true });
+  }
+
+  if (error) {
+    res.status(500).json({ message: "cant edit user history rental", success: false });
+  }
+}
+
+// edit user history bike status
+export async function editUserHistoryStatus(req, res) {
+  const { id } = req.params;
+  const { isRented, bikeCode, returnedTime, station } = req.body;
+
+  const user = await User.findById(id);
+
+  const [data, error] = await promiseResolver(user);
+
+  if (data) {
+    const userStatusBike = data.historyRental.find(
+      (bike) => bike.station === station && bike.bikeCode === bikeCode
+    );
+
+    if (userStatusBike) {
+      userStatusBike.returnedTime = returnedTime;
+      userStatusBike.isRented = isRented;
+      console.log(userStatusBike);
+
+      await user.save();
+    }
+
+    return res
+      .status(200)
+      .json({ userStatusBike, message: "edit user bike status success", success: true });
+  }
+  if (error) {
+    console.log(error);
+    return res.status(501).json({ message: "edit user bike status failed", success: false });
+  }
 }
